@@ -3,6 +3,7 @@ package com.monstertradingcardgame.server_core.http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,19 +15,18 @@ public class HttpParser {
     private static final int SP = 0x20; // 32
     private static final int CR = 0x0D; // 13
     private static final int LF = 0x0A; // 10
-    public HttpRequest parseHttpRequest(InputStream inputStream) throws HttpParsingException {             // not static, because every http Parser has his own Parser for configuration
+    public HttpRequest parseHttpRequest(InputStream inputStream) throws HttpParsingException, IOException {             // not static, because every http Parser has his own Parser for configuration
 
         InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
 
         HttpRequest request = new HttpRequest();
 
-        try {
-            parseRequestLine(reader, request);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        parseHeaders(reader, request);
-        parseBody(reader, request);
+//        try {
+//            parseRequestLine(reader, request);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        parseHeadersAndBody(reader, request);
 
         return request;
     }
@@ -76,10 +76,20 @@ public class HttpParser {
         }
     }
 
-    private void parseHeaders(InputStreamReader reader, HttpRequest request) {
-        StringBuilder processingDataBuffer = new StringBuilder();
-    }
-    private void parseBody(InputStreamReader reader, HttpRequest request) {
-        // TODO: parse http body
+    private void parseHeadersAndBody(InputStreamReader reader, HttpRequest request) throws IOException {
+        BufferedReader bReader = new BufferedReader(reader);
+        String line = bReader.readLine();
+
+        while (line != null && !line.isEmpty()) {
+            line = bReader.readLine();
+            request.getHeader().parseHeaders(line);
+        }
+
+        if (request.getHeader().getContentLength() > 0) {
+            char[] charBuffer = new char[request.getHeader().getContentLength()];
+            bReader.read(charBuffer, 0, request.getHeader().getContentLength());
+
+            request.setBody(new String(charBuffer));
+        }
     }
 }

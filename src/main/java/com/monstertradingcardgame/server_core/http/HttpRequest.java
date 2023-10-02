@@ -48,4 +48,13 @@ public class HttpRequest {
                 requestTargetParts.add(part);
         }
     }
+
+    public HttpHeader getHeader() {
+        return httpHeader;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+        System.out.println("Body:" + body);
+    }
 }

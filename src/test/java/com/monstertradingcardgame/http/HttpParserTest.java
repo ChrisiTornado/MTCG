@@ -222,7 +222,7 @@ class HttpParserTest {
     }
 
     private InputStream generateBadTestCaseRequestLineOnlyLFnoCR() {
-        String rawData = "GET / HTTP/1.1\r" + // <--- no CR
+        String rawData = "GET / HTTP/1.1\n" + // <--- no CR
                 "Host: localhost:8080\r\n" +
                 "Connection: keep-alive\r\n" +
                 "Cache-Control: max-age=0\r\n" +

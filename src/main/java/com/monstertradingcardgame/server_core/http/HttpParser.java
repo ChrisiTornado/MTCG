@@ -73,14 +73,13 @@ public class HttpParser {
                     }
                 }
             }
-
-            // TODO: parse http body
         }
     }
 
     private void parseHeaders(InputStreamReader reader, HttpRequest request) {
-
+        StringBuilder processingDataBuffer = new StringBuilder();
     }
     private void parseBody(InputStreamReader reader, HttpRequest request) {
+        // TODO: parse http body
     }
 }

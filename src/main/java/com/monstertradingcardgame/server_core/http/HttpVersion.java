@@ -24,7 +24,7 @@ public enum HttpVersion {
             throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
         }
         int major = Integer.parseInt(matcher.group("major"));
-        int minor = Integer.parseInt(matcher.group("miner"));
+        int minor = Integer.parseInt(matcher.group("minor"));
 
         HttpVersion tempBestCompatible = null;
         for (HttpVersion version : HttpVersion.values()) {

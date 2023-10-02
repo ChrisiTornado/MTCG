@@ -14,15 +14,14 @@ public class HttpServer {
 
     public static void main(String[] args) {
         LOGGER.info("Server starting...");
+
         ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/http.json");
         Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
 
         LOGGER.info("Using Port: " + conf.getPort());
         LOGGER.info("Using WebRoot: " + conf.getWebroot());
-
-        ServerListenerThread serverListenerThread = null;
         try {
-            serverListenerThread = new ServerListenerThread(conf.getPort(), conf.getWebroot());
+            ServerListenerThread serverListenerThread = new ServerListenerThread(conf.getPort(), conf.getWebroot());
             serverListenerThread.start();
         } catch (IOException e) {
             throw new RuntimeException(e);

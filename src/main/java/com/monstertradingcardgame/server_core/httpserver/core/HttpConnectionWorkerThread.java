@@ -1,5 +1,8 @@
 package com.monstertradingcardgame.server_core.httpserver.core;
 
+import com.monstertradingcardgame.server_core.http.HttpParser;
+import com.monstertradingcardgame.server_core.http.HttpParsingException;
+import com.monstertradingcardgame.server_core.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,56 +11,59 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class HttpConnectionWorkerThread extends Thread{
+public class HttpConnectionWorkerThread extends Thread {
     private final static Logger LOGGER = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
     private Socket socket;
+    private HttpParser httpParser = new HttpParser();
+
     public HttpConnectionWorkerThread(Socket socket) {
         this.socket = socket;
     }
+
     @Override
     public void run() {
         InputStream inputStream = null;
         OutputStream outputStream = null;
+        HttpRequest request = null;
+
         try {
             inputStream = socket.getInputStream();
+            request = httpParser.parseHttpRequest(inputStream);
+
+
             outputStream = socket.getOutputStream();
 
-            int _byte;
 
-            while ( (_byte = inputStream.read()) >= 0) {
-                System.out.print((char) _byte);
-            }
+            String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>This page was served using my Simple Java HTTP Server</h1></body></html>";
 
-            String html = "<html><head></head><body><h1>Test</h1></body></html>";
-            final String CRLF = "\n\r";
+            final String CRLF = "\r\n"; // 13, 10
+
             String response =
-                    "HTTP/1.1 200 OK" + CRLF + "Content-Length: " + html.getBytes().length + CRLF + CRLF + html + CRLF + CRLF;
+                    "HTTP/1.1 200 OK" + CRLF + // Status Line  :   HTTTP_VERSION RESPONSE_CODE RESPONSE_MESSAGE
+                            "Content-Length: " + html.getBytes().length + CRLF + // HEADER
+                            CRLF +
+                            html +
+                            CRLF + CRLF;
 
             outputStream.write(response.getBytes());
-            LOGGER.info("Connection Process finished");
-        } catch (IOException e) {
+            LOGGER.info(" * Connection Processing Finished.");
+        } catch (IOException | HttpParsingException e) {
             LOGGER.error("Problem with communication", e);
         } finally {
-            if (inputStream != null) {
+            if (inputStream!= null) {
                 try {
                     inputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                } catch (IOException e) {}
             }
-            if (outputStream != null) {
+            if (outputStream!=null) {
                 try {
                     outputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                } catch (IOException e) {}
             }
-            if (socket != null) {
+            if (socket!= null) {
                 try {
                     socket.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                } catch (IOException e) {}
             }
         }
     }

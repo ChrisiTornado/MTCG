@@ -1,10 +1,16 @@
 package com.monstertradingcardgame.server_core.http;
 
-public class HttpRequest extends HttpMessage {
+import java.util.ArrayList;
+import java.util.List;
+
+public class HttpRequest {
 
     private HttpMethod method;
     private String requestTarget;
-    private String httpVersion;
+    private List<String> requestTargetParts;
+    private String params;
+    private HttpHeader httpHeader =  new HttpHeader();
+    private String body;
 
     HttpRequest() {
 
@@ -35,5 +41,11 @@ public class HttpRequest extends HttpMessage {
             throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_500_SERVER_ERROR);
         }
         this.requestTarget = requestTarget;
+        String[] parts = requestTarget.split("/");
+        requestTargetParts = new ArrayList<>();
+        for (String part : parts) {
+            if (part != null && part.length() > 0)
+                requestTargetParts.add(part);
+        }
     }
 }

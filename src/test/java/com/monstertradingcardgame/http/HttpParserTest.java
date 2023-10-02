@@ -206,7 +206,7 @@ class HttpParserTest {
     }
 
     private InputStream generateBadTestCaseRequestLineOnlyCRnoLF() {
-        String rawData = "GET / HTTP/1.1\r" + // <--- no LF
+        String rawData = "GET /users HTTP/1.1\r" + // <--- no LF
                 "Host: localhost:8080\r\n" +
                 "Connection: keep-alive\r\n" +
                 "Cache-Control: max-age=0\r\n" +
@@ -222,7 +222,11 @@ class HttpParserTest {
     }
 
     private InputStream generateBadTestCaseRequestLineOnlyLFnoCR() {
+<<<<<<< Updated upstream
         String rawData = "GET / HTTP/1.1\n" + // <--- no CR
+=======
+        String rawData = "GET /user HTTP/1.1\r" + // <--- no CR
+>>>>>>> Stashed changes
                 "Host: localhost:8080\r\n" +
                 "Connection: keep-alive\r\n" +
                 "Cache-Control: max-age=0\r\n" +

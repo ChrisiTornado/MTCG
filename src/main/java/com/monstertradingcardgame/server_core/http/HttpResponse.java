@@ -9,23 +9,25 @@ public class HttpResponse {
     private String contentType;
     private String content;
 
-    public HttpResponse(HttpStatusCode statusCode, String contentType, String content) {
+    final String CRLF = "\r\n";
+    private static final String CONTENT_TYPE = "application/json";
+
+    public HttpResponse(HttpStatusCode statusCode, String content) {
         this.statusCode = statusCode;
-        this.contentType = contentType;
+        this.contentType = CONTENT_TYPE;
         this.content = content;
     }
 
-    public String getStatusCode() {
-
+    public String buildResponse() {
         String localDatetime = DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("UTC")));
         return "HTTP/1.1 " + this.statusCode.STATUS_CODE + " " + this.statusCode.MESSAGE + "\r\n" +
-                "Cache-Control: max-age=0\r\n" +
-                "Connection: close\r\n" +
-                "Date: " + localDatetime + "\r\n" +
-                "Expires: " + localDatetime + "\r\n" +
-                "Content-Type: " + this.contentType + "\r\n" +
-                "Content-Length: " + this.content.length() + "\r\n" +
-                "\r\n" +
+                "Cache-Control: max-age=0" + CRLF +
+                "Connection: close" + CRLF +
+                "Date: " + localDatetime + CRLF +
+                "Expires: " + localDatetime + CRLF +
+                "Content-Type: " + this.contentType + CRLF +
+    //            "Content-Length: " + this.content.length() + CRLF +
+                CRLF +
                 this.content;
     }
 }

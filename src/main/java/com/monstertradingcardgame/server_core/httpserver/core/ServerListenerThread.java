@@ -23,7 +23,6 @@ public class ServerListenerThread extends Thread {
 
     @Override
     public void run() {
-
         try {
             while ( serverSocket.isBound() && !serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
@@ -31,7 +30,6 @@ public class ServerListenerThread extends Thread {
                 HttpConnectionWorkerThread workerThread = new HttpConnectionWorkerThread(socket);
                 workerThread.start();
             }
-
         } catch (IOException e) {
             LOGGER.error("Problem with setting socket", e);
         } finally {

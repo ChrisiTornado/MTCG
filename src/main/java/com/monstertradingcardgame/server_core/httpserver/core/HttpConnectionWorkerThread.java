@@ -1,8 +1,6 @@
 package com.monstertradingcardgame.server_core.httpserver.core;
 
-import com.monstertradingcardgame.server_core.http.HttpParser;
-import com.monstertradingcardgame.server_core.http.HttpParsingException;
-import com.monstertradingcardgame.server_core.http.HttpRequest;
+import com.monstertradingcardgame.server_core.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,21 +29,14 @@ public class HttpConnectionWorkerThread extends Thread {
             request = httpParser.parseHttpRequest(inputStream);
 
 
+            HttpResponse response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK, request.getBody());
+
+
+            byte[] responseBytes = response.buildResponse().getBytes();
+
             outputStream = socket.getOutputStream();
-
-
-            String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>This page was served using my Simple Java HTTP Server</h1></body></html>";
-
-            final String CRLF = "\r\n"; // 13, 10
-
-            String response =
-                    "HTTP/1.1 200 OK" + CRLF + // Status Line  :   HTTTP_VERSION RESPONSE_CODE RESPONSE_MESSAGE
-                            "Content-Length: " + html.getBytes().length + CRLF + // HEADER
-                            CRLF +
-                            html +
-                            CRLF + CRLF;
-
-            outputStream.write(response.getBytes());
+            outputStream.write(responseBytes);
+            outputStream.flush();
             LOGGER.info(" * Connection Processing Finished.");
         } catch (IOException | HttpParsingException e) {
             LOGGER.error("Problem with communication", e);

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -30,6 +31,8 @@ class HttpParserTest {
             );
         } catch (HttpParsingException e) {
             fail(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         assertNotNull(request);
         assertEquals(request.getMethod(), HttpMethod.GET);
@@ -46,6 +49,8 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -59,6 +64,8 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -72,6 +79,8 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -85,6 +94,8 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -98,6 +109,8 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -111,6 +124,8 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

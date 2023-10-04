@@ -21,11 +21,11 @@ public class HttpParser {
 
         HttpRequest request = new HttpRequest();
 
-//        try {
-//            parseRequestLine(reader, request);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            parseRequestLine(reader, request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         parseHeadersAndBody(reader, request);
 
         return request;
@@ -84,6 +84,8 @@ public class HttpParser {
             line = bReader.readLine();
             request.getHeader().parseHeaders(line);
         }
+
+        System.out.println(request.getHeader());
 
         if (request.getHeader().getContentLength() > 0) {
             char[] charBuffer = new char[request.getHeader().getContentLength()];

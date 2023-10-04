@@ -1,6 +1,11 @@
 package com.monstertradingcardgame.server_core.http;
 
 public enum HttpStatusCode {
+    // SUCESS MESSAGES
+    SUCCESS_200_OK(200, "OK"),
+    SUCCESS_201_CREATED(201,"Created"),
+    SUCCESS_204_NO_CONTENT(204,"No Content"),
+
 
     //    CLIENT ERRORS
     CLIENT_ERROR_400_BAD_REQUEST(400, "Bad Request"),

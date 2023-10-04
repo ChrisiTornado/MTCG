@@ -57,4 +57,8 @@ public class HttpRequest {
         this.body = body;
         System.out.println("Body:" + body);
     }
+
+    public String getBody() {
+        return body;
+    }
 }

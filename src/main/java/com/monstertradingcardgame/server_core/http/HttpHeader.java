@@ -12,10 +12,6 @@ public class HttpHeader {
 
         if (split.length >= 2) {
             headers.put(split[0].trim(), split[1].trim());
-            System.out.println("test: " + headers.values());
-        } else {
-            // TODO: Implement
-            System.err.println("Invalid header line: " + headerLine);
         }
     }
 
@@ -29,5 +25,14 @@ public class HttpHeader {
             return 0;
         }
         return Integer.parseInt(header);
+    }
+
+    public String toString() {
+        StringBuilder headerString = new StringBuilder();
+        System.out.println("Header:");
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            headerString.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return headerString.toString();
     }
 }

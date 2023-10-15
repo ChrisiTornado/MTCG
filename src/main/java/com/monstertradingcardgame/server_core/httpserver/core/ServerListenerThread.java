@@ -14,19 +14,21 @@ public class ServerListenerThread extends Thread {
     private int port;
     private String webroot;
     private ServerSocket serverSocket;
+    private boolean isServerSocketRunning;
 
     public ServerListenerThread(int port, String webroot) throws IOException {
         this.port = port;
         this.webroot = webroot;
         this.serverSocket = new ServerSocket(this.port);
+        boolean isServerSocketRunning = serverSocket.isBound() && !serverSocket.isClosed();
     }
 
     @Override
     public void run() {
         try {
-            while ( serverSocket.isBound() && !serverSocket.isClosed()) {
+            while (isServerSocketRunning) {
                 Socket socket = serverSocket.accept();
-                LOGGER.info(" * Connection accepted: " + socket.getInetAddress());
+                LOGGER.info(" * Connection accepted");
                 HttpConnectionWorkerThread workerThread = new HttpConnectionWorkerThread(socket);
                 workerThread.start();
             }
@@ -39,6 +41,5 @@ public class ServerListenerThread extends Thread {
                 } catch (IOException e) {}
             }
         }
-
     }
 }

@@ -28,10 +28,7 @@ public class HttpConnectionWorkerThread extends Thread {
             inputStream = socket.getInputStream();
             request = httpParser.parseHttpRequest(inputStream);
 
-
             HttpResponse response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK, request.getBody());
-
-
             byte[] responseBytes = response.buildResponse().getBytes();
 
             outputStream = socket.getOutputStream();

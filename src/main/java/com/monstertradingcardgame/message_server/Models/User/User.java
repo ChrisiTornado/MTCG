@@ -10,10 +10,9 @@ public class User {
     public Credentials credentials;
     public UserData userData;
 
-    public List<UUID> Deck = new ArrayList<>();
+    public List<UUID> deck = new ArrayList<>();
 
-    private List<UUID> Stack = new ArrayList<>();
-
+    public List<UUID> stack = new ArrayList<>();
 
     public User(String username, String password, int coins)
     {
@@ -21,7 +20,6 @@ public class User {
         this.token = getToken();
         this.coins = coins;
     }
-
 
     @Override
     public String toString() {

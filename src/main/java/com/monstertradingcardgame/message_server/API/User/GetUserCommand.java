@@ -7,19 +7,18 @@ import com.monstertradingcardgame.message_server.Models.User.UserData;
 import com.monstertradingcardgame.server_core.http.HttpResponse;
 import com.monstertradingcardgame.server_core.http.HttpStatusCode;
 
-public class UpdateCommand extends AuthenticatedRouteCommand {
+public class GetUserCommand extends AuthenticatedRouteCommand {
     private final IUserManager _userManager;
     private final String username;
     private final User identity;
-    private final UserData userData;
 
-    public UpdateCommand(IUserManager userManager, String username, User identity, UserData userData) {
+    public GetUserCommand(IUserManager userManager, String username, User identity) {
         super(identity);
         _userManager = userManager;
         this.username = username;
         this.identity = identity;
-        this.userData = userData;
     }
+
 
     @Override
     public HttpResponse Execute() {
@@ -28,12 +27,21 @@ public class UpdateCommand extends AuthenticatedRouteCommand {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
             return response;
         }
-        try {
-            _userManager.UpdateUser(identity, userData);
-            response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
-        } catch (RuntimeException e) {
+        User user;
+
+        user = _userManager.getUserByAuthToken(identity.token);
+        if (user == null) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            return response;
         }
+        UserData userData = _userManager.getUserData(identity);
+        if (userData.isEmpty()) {
+            response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            response.setContent("UserData is empty");
+            return response;
+        }
+        response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
+        response.setContent(userData.toString());
         return response;
     }
 }

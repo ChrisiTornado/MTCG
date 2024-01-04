@@ -2,34 +2,48 @@ package com.monstertradingcardgame.message_server.API;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.monstertradingcardgame.message_server.API.Card.ConfigureDeckCommand;
 import com.monstertradingcardgame.message_server.API.Card.FormatParser;
+import com.monstertradingcardgame.message_server.API.Card.GetCardsCommand;
+import com.monstertradingcardgame.message_server.API.Card.GetDeckCommand;
+import com.monstertradingcardgame.message_server.API.Package.BuyPackageCommand;
+import com.monstertradingcardgame.message_server.API.Package.NewPackageCommand;
 import com.monstertradingcardgame.message_server.API.Trading.TradingDealParser;
 import com.monstertradingcardgame.message_server.API.User.*;
+import com.monstertradingcardgame.message_server.BLL.Package.IPackageManager;
+import com.monstertradingcardgame.message_server.BLL.cards.ICardsManager;
 import com.monstertradingcardgame.message_server.BLL.user.IUserManager;
+import com.monstertradingcardgame.message_server.Models.Card.Card;
 import com.monstertradingcardgame.message_server.Models.User.Credentials;
 import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.message_server.Models.User.UserData;
 import com.monstertradingcardgame.server_core.http.HttpRequest;
 import com.monstertradingcardgame.server_core.httpserver.util.Json;
 
-import java.security.Identity;
+import java.util.Map;
+import java.util.UUID;
 
 public class Router {
     private final IUserManager _userManager;
+    private final ICardsManager _cardsManager;
+    private final IPackageManager _packageManager;
     // private final IdentityProvider _identityProvider;
     private final IRouteParser _routeParserUsername = new UsernameRouteParser();
     private final IRouteParser _routeParserTradingdealId = new TradingDealParser();
     private final IRouteParser _routeParserFormat = new FormatParser();
     private final IdentityProvider _identityProvider;
 
-    public Router(IUserManager userManager) {
+    public Router(IUserManager userManager, ICardsManager cardsManager, IPackageManager packageManager) {
         _userManager = userManager;
+        _cardsManager = cardsManager;
+        _packageManager = packageManager;
         _identityProvider = new IdentityProvider(userManager);
     }
 
     public IRouteCommand Resolve(HttpRequest request) {
         IRouteCommand command = null;
         JsonNode jsonNode;
+        User identity = _identityProvider.getIdentityForRequest(request);
         try {
             jsonNode = Json.parse(request.getBody());
         } catch (JsonProcessingException e) {
@@ -40,17 +54,14 @@ public class Router {
             case GET -> {
                 switch (request.getRequestTarget()) {
                     case "/users" -> {
-                        if (isMatchUsername(request.getRequestTarget())) {
-                            User identity = _identityProvider.getIdentityForRequest(request);
-                            command = new GetCommand(_userManager, parseUsername(request.getRequestTarget()), identity);
-                        }
+                        if (isMatchUsername(request.getRequestTarget()))
+                            command = new GetUserCommand(_userManager, parseUsername(request.getRequestTarget()), identity);
+
                     }
-                    case "/cards" -> {
-                        System.out.println("cards");
-                    }
+                    case "/cards" -> command = new GetCardsCommand(_cardsManager, identity);
                     case "/deck" -> {
                         if (isMatchFormat(request.getRequestTarget())) {
-
+                            command = new GetDeckCommand(identity, _cardsManager, parseFormat(request.getRequestTarget()));
                         }
                     }
                     case "/stats" -> {
@@ -83,11 +94,14 @@ public class Router {
                         }
                     }
                     case "/packages" -> {
-                        System.out.println("addpackages");
+                        try {
+                            Card[] cards = Json.fromJson(jsonNode, Card[].class);
+                            command = new NewPackageCommand(identity, _packageManager, cards);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                    case "/transactions/packages" -> {
-                        System.out.println("transactions");
-                    }
+                    case "/transactions/packages" -> command = new BuyPackageCommand(_packageManager, identity);
                     case "/battles" -> {
                         System.out.println("battles");
                     }
@@ -102,17 +116,21 @@ public class Router {
                 switch (request.getRequestTarget()) {
                     case "/users" -> {
                         if (isMatchUsername(request.getRequestTarget())) {
-                            User identity = _identityProvider.getIdentityForRequest(request);
                             try {
                                 UserData userData = Json.fromJson(jsonNode, UserData.class);
-                                command = new UpdateCommand(_userManager, parseUsername(request.getRequestTarget()), identity, userData);
+                                command = new UpdateUserCommand(_userManager, parseUsername(request.getRequestTarget()), identity, userData);
                             } catch (JsonProcessingException e) {
                                 throw new RuntimeException(e);
                             }
                         }
                     }
                     case "/deck" -> {
-
+                        try {
+                            UUID[] cardIds = Json.fromJson(jsonNode, UUID[].class);
+                            command = new ConfigureDeckCommand(_cardsManager, cardIds ,identity);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
@@ -125,7 +143,7 @@ public class Router {
                     }
                 }
             }
-        };
+        }
         return command;
     }
 
@@ -142,7 +160,15 @@ public class Router {
     }
 
     public String parseUsername(String path) {
-//        _routeParserUsername.parseParameters(path, "/users/{username}");
-        return "";
+        Map<String, String> parameters = _routeParserUsername.parseParameters(path, "/users/{username}");
+        return parameters.get("username");
+    }
+
+    public String parseFormat(String path) {
+        Map<String, String> dict = _routeParserFormat.parseParameters(path, "/deck");
+        if (!dict.containsKey("format")) {
+            dict.put("format", "json");
+        }
+        return dict.get("format");
     }
 }

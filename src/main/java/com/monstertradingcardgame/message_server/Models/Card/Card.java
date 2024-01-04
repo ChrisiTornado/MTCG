@@ -1,5 +1,7 @@
 package com.monstertradingcardgame.message_server.Models.Card;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public class Card {
@@ -8,7 +10,7 @@ public class Card {
     public UUID id;
     public ElementType elementType;
 
-    public Card(Card_Type name, double damage, UUID id) {
+    public Card(@JsonProperty("Name") Card_Type name, @JsonProperty("Damage") double damage, @JsonProperty("Id") UUID id) {
         this.name = name;
         this.damage = damage;
         this.id = id;

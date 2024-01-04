@@ -20,7 +20,7 @@ public class UserManager implements IUserManager {
     }
 
     @Override
-    public User LoginUser(Credentials credentials) {
+    public User loginUser(Credentials credentials) {
         User user = _userDao.getUserByCredentials(credentials.username, credentials.password);
         if (user != null) {
             return user;
@@ -31,24 +31,24 @@ public class UserManager implements IUserManager {
     }
 
     @Override
-    public void RegisterUser(Credentials credentials) {
+    public void registerUser(Credentials credentials) {
         User user = new User(credentials.username, credentials.password, 20);
         if (_userDao.insertUser(user) == false)
             throw new RuntimeException("User already exists");
     }
 
     @Override
-    public void UpdateUser(User identity, UserData userdata) {
+    public void updateUser(User identity, UserData userdata) {
         _userDao.updateUserData(identity, userdata);
     }
 
     @Override
-    public UserData GetUserData(User identity) {
+    public UserData getUserData(User identity) {
         return _userDao.getUserData(identity);
     }
 
     @Override
-    public User GetUserByAuthToken(String authToken) {
+    public User getUserByAuthToken(String authToken) {
         User user = _userDao.getUserByAuthToken(authToken);
         if (user != null) {
             return user;

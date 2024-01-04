@@ -2,9 +2,8 @@ package com.monstertradingcardgame.message_server.API;
 
 import com.monstertradingcardgame.message_server.BLL.user.IUserManager;
 import com.monstertradingcardgame.message_server.Models.User.User;
+import com.monstertradingcardgame.server_core.http.HttpHeader;
 import com.monstertradingcardgame.server_core.http.HttpRequest;
-
-import java.util.Map;
 
 public class IdentityProvider {
     private final IUserManager _userManager;
@@ -15,21 +14,18 @@ public class IdentityProvider {
 
     public User getIdentityForRequest(HttpRequest request) {
         User currentUser = null;
-//
-//        Map<String, String> headers = request.getHeader();
-//        if (headers.containsKey("Authorization")) {
-//            String authToken = headers.get("Authorization");
-//            String prefix = "Bearer ";
-//
-//            if (authToken.startsWith(prefix)) {
-//                try {
-//                    currentUser = _userManager.getUserByAuthToken(authToken.substring(prefix.length()));
-//                } catch (Exception ignored) {
-//                    // Behandlung der Ausnahme (falls erforderlich)
-//                }
-//            }
-//        }
-//
+
+        HttpHeader headers = request.getHeader();
+        String authToken = headers.getHeader("Authorization");
+        if (authToken != null && authToken.startsWith("Bearer ")) {
+            String token = authToken.substring("Bearer ".length());
+            try {
+                currentUser = _userManager.getUserByAuthToken(token);
+            } catch (Exception ignored) {
+                // TODO: implement exception
+            }
+        }
+
        return currentUser;
     }
 }

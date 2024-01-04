@@ -21,7 +21,7 @@ public class LoginCommand implements IRouteCommand {
     public HttpResponse Execute() {
         User user;
         try {
-            user = _userManager.LoginUser(_credentials);
+            user = _userManager.loginUser(_credentials);
         } catch (RuntimeException e) {
             user = null;
         }

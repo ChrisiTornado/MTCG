@@ -2,7 +2,11 @@ package com.monstertradingcardgame.server_core.httpserver.core;
 
 import com.monstertradingcardgame.message_server.API.IRouteCommand;
 import com.monstertradingcardgame.message_server.API.Router;
+import com.monstertradingcardgame.message_server.BLL.Package.PackageManager;
+import com.monstertradingcardgame.message_server.BLL.cards.CardsManager;
 import com.monstertradingcardgame.message_server.BLL.user.UserManager;
+import com.monstertradingcardgame.message_server.DAL.DatabaseCardDao;
+import com.monstertradingcardgame.message_server.DAL.DatabasePackageDao;
 import com.monstertradingcardgame.message_server.DAL.DatabaseUserDao;
 import com.monstertradingcardgame.server_core.http.*;
 import org.slf4j.Logger;
@@ -19,9 +23,13 @@ public class HttpConnectionWorkerThread extends Thread {
     private HttpParser httpParser = new HttpParser();
 
     private DatabaseUserDao userDao = new DatabaseUserDao();
+    private DatabaseCardDao cardDao = new DatabaseCardDao();
+    private DatabasePackageDao packageDao = new DatabasePackageDao();
     private UserManager userManager = new UserManager(userDao);
+    private CardsManager cardsManager = new CardsManager(cardDao);
+    private PackageManager packageManager = new PackageManager(packageDao);
 
-    private Router router = new Router(userManager);
+    private Router router = new Router(userManager, cardsManager, packageManager);
 
     public HttpConnectionWorkerThread(Socket socket) {
         this.socket = socket;

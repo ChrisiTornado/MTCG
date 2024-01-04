@@ -6,20 +6,20 @@ import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.message_server.Models.User.UserData;
 import com.monstertradingcardgame.server_core.http.HttpResponse;
 import com.monstertradingcardgame.server_core.http.HttpStatusCode;
-import com.monstertradingcardgame.server_core.httpserver.util.Json;
 
-public class GetCommand extends AuthenticatedRouteCommand {
+public class UpdateUserCommand extends AuthenticatedRouteCommand {
     private final IUserManager _userManager;
     private final String username;
     private final User identity;
+    private final UserData userData;
 
-    public GetCommand(IUserManager userManager, String username, User identity) {
+    public UpdateUserCommand(IUserManager userManager, String username, User identity, UserData userData) {
         super(identity);
         _userManager = userManager;
         this.username = username;
         this.identity = identity;
+        this.userData = userData;
     }
-
 
     @Override
     public HttpResponse Execute() {
@@ -28,21 +28,12 @@ public class GetCommand extends AuthenticatedRouteCommand {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
             return response;
         }
-        User user;
-
-        user = _userManager.GetUserByAuthToken(identity.token);
-        if (user == null) {
+        try {
+            _userManager.updateUser(identity, userData);
+            response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
+        } catch (RuntimeException e) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
-            return response;
         }
-        UserData userData = _userManager.GetUserData(identity);
-        if (userData.isEmpty()) {
-            response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
-            response.setContent("UserData is empty");
-            return response;
-        }
-        response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
-        response.setContent(userData.toString());
         return response;
     }
 }

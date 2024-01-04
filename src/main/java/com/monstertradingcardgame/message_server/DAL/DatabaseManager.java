@@ -16,10 +16,8 @@ public class DatabaseManager {
             if (conn != null) {
                 System.out.println("Connected to the PostgreSQL server.");
 
-                 //Hier löschen wir alle Tabellen
                 dropTables(conn);
 
-                // Hier erstellen wir die Tabellen
                 createTables(conn);
             } else {
                 System.out.println("Failed to make connection to the database.");
@@ -44,6 +42,11 @@ public class DatabaseManager {
                             "username VARCHAR(50) UNIQUE NOT NULL," +
                             "password VARCHAR(100) NOT NULL," +
                             "coins INTEGER DEFAULT 0" +
+                            "bio TEXT," +
+                            "image VARCHAR(255)," +
+                            "elo INTEGER DEFAULT 0," +
+                            "wins INTEGER DEFAULT 0," +
+                            "losses INTEGER DEFAULT 0" +
                             ");"
             );
             // Füge weitere CREATE TABLE-Statements für andere Tabellen hinzu, falls erforderlich

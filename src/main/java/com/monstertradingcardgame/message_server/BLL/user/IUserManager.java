@@ -5,9 +5,9 @@ import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.message_server.Models.User.UserData;
 
 public interface IUserManager {
-    User LoginUser(Credentials credentials);
-    void RegisterUser(Credentials credentials);
-    void UpdateUser(User identity, UserData userdata);
-    UserData GetUserData(User identity);
-    User GetUserByAuthToken(String authToken);
+    User loginUser(Credentials credentials);
+    void registerUser(Credentials credentials);
+    void updateUser(User identity, UserData userdata);
+    UserData getUserData(User identity);
+    User getUserByAuthToken(String authToken);
 }

@@ -1,10 +1,8 @@
 package com.monstertradingcardgame.message_server.API.User;
 
-import ch.qos.logback.classic.turbo.DuplicateMessageFilter;
 import com.monstertradingcardgame.message_server.API.IRouteCommand;
 import com.monstertradingcardgame.message_server.BLL.user.IUserManager;
 import com.monstertradingcardgame.message_server.Models.User.Credentials;
-import com.monstertradingcardgame.server_core.http.HttpRequest;
 import com.monstertradingcardgame.server_core.http.HttpResponse;
 import com.monstertradingcardgame.server_core.http.HttpStatusCode;
 
@@ -21,7 +19,7 @@ public class RegisterCommand implements IRouteCommand {
     public HttpResponse Execute() {
         HttpResponse response;
         try {
-            _userManager.RegisterUser(_credentials);
+            _userManager.registerUser(_credentials);
             response = new HttpResponse(HttpStatusCode.SUCCESS_201_CREATED);
         } catch (RuntimeException e) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_409_DUPLICATED_USER);

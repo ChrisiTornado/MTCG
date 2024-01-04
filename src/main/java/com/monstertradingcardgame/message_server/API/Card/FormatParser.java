@@ -11,7 +11,7 @@ public class FormatParser implements IRouteParser {
     }
 
     @Override
-    public Map<String, String> ParseParameters(String resourcePath, String routePattern) {
+    public Map<String, String> parseParameters(String resourcePath, String routePattern) {
         return null;
     }
 }

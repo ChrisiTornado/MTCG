@@ -15,7 +15,7 @@ public class HttpParser {
     private static final int SP = 0x20; // 32
     private static final int CR = 0x0D; // 13
     private static final int LF = 0x0A; // 10
-    public HttpRequest parseHttpRequest(InputStream inputStream) throws HttpParsingException, IOException {             // not static, because every http Parser has his own Parser for configuration
+    public HttpRequest parseHttpRequest(InputStream inputStream) throws HttpParsingException, IOException {
 
         InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
 

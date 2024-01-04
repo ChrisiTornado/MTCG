@@ -1,4 +1,7 @@
 {
-  "port": 8080,
-  "webroot": "/"
+  "port": 10001,
+  "webroot": "/",
+  "db_user": "cardgame",
+  "db_password": "dein_passwort",
+  "url": "jdbc:postgresql://localhost:5432/mtcg"
 }

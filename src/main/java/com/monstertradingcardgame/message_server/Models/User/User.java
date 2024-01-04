@@ -18,8 +18,8 @@ public class User {
     public User(String username, String password, int coins)
     {
         credentials = new Credentials(username, password);
-        getToken();
-        coins = this.coins;
+        this.token = getToken();
+        this.coins = coins;
     }
 
 

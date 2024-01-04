@@ -20,7 +20,7 @@ public class ServerListenerThread extends Thread {
         this.port = port;
         this.webroot = webroot;
         this.serverSocket = new ServerSocket(this.port);
-        boolean isServerSocketRunning = serverSocket.isBound() && !serverSocket.isClosed();
+        isServerSocketRunning = serverSocket.isBound() && !serverSocket.isClosed();
     }
 
     @Override
@@ -28,17 +28,19 @@ public class ServerListenerThread extends Thread {
         try {
             while (isServerSocketRunning) {
                 Socket socket = serverSocket.accept();
-                LOGGER.info(" * Connection accepted");
                 HttpConnectionWorkerThread workerThread = new HttpConnectionWorkerThread(socket);
                 workerThread.start();
             }
         } catch (IOException e) {
             LOGGER.error("Problem with setting socket", e);
         } finally {
-            if (serverSocket!=null) {
-                try {
+            try {
+                isServerSocketRunning = false;
+                if (serverSocket != null && !serverSocket.isClosed()) {
                     serverSocket.close();
-                } catch (IOException e) {}
+                }
+            } catch (IOException e) {
+                LOGGER.error("Error while closing the server socket", e);
             }
         }
     }

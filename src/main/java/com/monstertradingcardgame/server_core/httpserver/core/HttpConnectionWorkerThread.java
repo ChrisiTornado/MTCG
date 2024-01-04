@@ -1,5 +1,9 @@
 package com.monstertradingcardgame.server_core.httpserver.core;
 
+import com.monstertradingcardgame.message_server.API.IRouteCommand;
+import com.monstertradingcardgame.message_server.API.Router;
+import com.monstertradingcardgame.message_server.BLL.user.UserManager;
+import com.monstertradingcardgame.message_server.DAL.DatabaseUserDao;
 import com.monstertradingcardgame.server_core.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,27 +18,44 @@ public class HttpConnectionWorkerThread extends Thread {
     private Socket socket;
     private HttpParser httpParser = new HttpParser();
 
+    private DatabaseUserDao userDao = new DatabaseUserDao();
+    private UserManager userManager = new UserManager(userDao);
+
+    private Router router = new Router(userManager);
+
     public HttpConnectionWorkerThread(Socket socket) {
         this.socket = socket;
     }
 
     @Override
     public void run() {
+        System.out.println("Test 2 + " + Thread.currentThread());
         InputStream inputStream = null;
         OutputStream outputStream = null;
-        HttpRequest request = null;
+        HttpRequest request;
 
         try {
             inputStream = socket.getInputStream();
             request = httpParser.parseHttpRequest(inputStream);
+            IRouteCommand command = router.Resolve(request);
 
-            HttpResponse response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK, request.getBody());
+            HttpResponse response;
+
+            if (command != null)
+                response = command.Execute();
+            else
+            {
+                response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            }
+
+            System.out.println(response.buildResponse());
+
             byte[] responseBytes = response.buildResponse().getBytes();
-
             outputStream = socket.getOutputStream();
             outputStream.write(responseBytes);
             outputStream.flush();
             LOGGER.info(" * Connection Processing Finished.");
+
         } catch (IOException | HttpParsingException e) {
             LOGGER.error("Problem with communication", e);
         } finally {

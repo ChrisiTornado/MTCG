@@ -170,9 +170,9 @@ curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Beare
 echo.
 curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Bearer altenhof-mtcgToken"
 echo.
-curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Name\": \"Kienboeck\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
+REM curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Name\": \"Kienboeck\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
 echo.
-curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"Name\": \"Altenhofer\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
+REM curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"Name\": \"Altenhofer\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
 echo.
 curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Bearer kienboec-mtcgToken"
 echo.
@@ -184,7 +184,7 @@ curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Beare
 echo.
 curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Bearer altenhof-mtcgToken"
 echo.
-curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"Name\": \"Hoax\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
+REM curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"Name\": \"Hoax\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
 echo.
 REM curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Name\": \"Hoax\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
 echo.
@@ -192,24 +192,24 @@ curl -X GET http://localhost:10001/users/someGuy  --header "Authorization: Beare
 echo.
 echo.
 
-REM REM --------------------------------------------------
-REM echo 15) stats
+REM --------------------------------------------------
+echo 15) stats
 curl -X GET http://localhost:10001/stats --header "Authorization: Bearer kienboec-mtcgToken"
-REM echo.
-REM curl -X GET http://localhost:10001/stats --header "Authorization: Bearer altenhof-mtcgToken"
-REM echo.
-REM echo.
+echo.
+curl -X GET http://localhost:10001/stats --header "Authorization: Bearer altenhof-mtcgToken"
+echo.
+echo.
 
-REM REM --------------------------------------------------
-REM echo 16) scoreboard
-REM curl -X GET http://localhost:10001/scoreboard --header "Authorization: Bearer kienboec-mtcgToken"
-REM echo.
-REM echo.
+REM --------------------------------------------------
+echo 16) scoreboard
+curl -X GET http://localhost:10001/scoreboard --header "Authorization: Bearer kienboec-mtcgToken"
+echo.
+echo.
 
 REM REM --------------------------------------------------
 REM echo 17) battle
-REM start /b "kienboec battle" curl -X POST http://localhost:10001/battles --header "Authorization: Bearer kienboec-mtcgToken"
-REM start /b "altenhof battle" curl -X POST http://localhost:10001/battles --header "Authorization: Bearer altenhof-mtcgToken"
+start /b "kienboec battle" curl -X POST http://localhost:10001/battles --header "Authorization: Bearer kienboec-mtcgToken"
+start /b "altenhof battle" curl -X POST http://localhost:10001/battles --header "Authorization: Bearer altenhof-mtcgToken"
 REM ping localhost -n 10 >NUL 2>NUL
 
 REM REM --------------------------------------------------

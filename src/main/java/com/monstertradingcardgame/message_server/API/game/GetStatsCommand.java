@@ -3,7 +3,6 @@ package com.monstertradingcardgame.message_server.API.game;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.monstertradingcardgame.message_server.API.AuthenticatedRouteCommand;
-import com.monstertradingcardgame.message_server.API.Card.NoCardsException;
 import com.monstertradingcardgame.message_server.BLL.game.IGameManager;
 import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.message_server.Models.User.UserStats;
@@ -11,13 +10,11 @@ import com.monstertradingcardgame.server_core.http.HttpResponse;
 import com.monstertradingcardgame.server_core.http.HttpStatusCode;
 import com.monstertradingcardgame.server_core.httpserver.util.Json;
 
-import java.sql.SQLException;
-
-public class getStatsCommand extends AuthenticatedRouteCommand {
+public class GetStatsCommand extends AuthenticatedRouteCommand {
     private User identity;
     private IGameManager _gameManager;
 
-    public getStatsCommand(User identity, IGameManager _gameManager) {
+    public GetStatsCommand(User identity, IGameManager _gameManager) {
         super(identity);
         this.identity = identity;
         this._gameManager = _gameManager;

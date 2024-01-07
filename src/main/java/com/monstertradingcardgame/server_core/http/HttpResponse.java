@@ -9,6 +9,10 @@ public class HttpResponse {
     private String contentType;
     private String content = "";
 
+    public HttpStatusCode getStatusCode() {
+        return statusCode;
+    }
+
     final String CRLF = "\r\n";
     private static final String CONTENT_TYPE = "application/json";
 

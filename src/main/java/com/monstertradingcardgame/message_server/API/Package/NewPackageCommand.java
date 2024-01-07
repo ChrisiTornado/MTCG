@@ -25,14 +25,17 @@ public class NewPackageCommand extends AuthenticatedRouteCommand {
         HttpResponse response;
         if (!identity.credentials.username.equals("admin")) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_403_FORBIDDEN);
+            response.setContent("Provided user is not \"admin\"");
             return response;
         }
 
         try {
             _packageManager.newPackage(identity, cards);
             response = new HttpResponse(HttpStatusCode.SUCCESS_201_CREATED);
+            response.setContent("Package and cards successfully created");
         } catch (RuntimeException e) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            response.setContent("Bad request");
         }
         return response;
     }

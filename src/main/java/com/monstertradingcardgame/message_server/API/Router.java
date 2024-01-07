@@ -10,7 +10,9 @@ import com.monstertradingcardgame.message_server.API.Package.BuyPackageCommand;
 import com.monstertradingcardgame.message_server.API.Package.NewPackageCommand;
 import com.monstertradingcardgame.message_server.API.Trading.TradingDealParser;
 import com.monstertradingcardgame.message_server.API.User.*;
-import com.monstertradingcardgame.message_server.API.game.getStatsCommand;
+import com.monstertradingcardgame.message_server.API.game.BattleCommand;
+import com.monstertradingcardgame.message_server.API.game.GetScoreboardCommand;
+import com.monstertradingcardgame.message_server.API.game.GetStatsCommand;
 import com.monstertradingcardgame.message_server.BLL.Package.IPackageManager;
 import com.monstertradingcardgame.message_server.BLL.cards.ICardsManager;
 import com.monstertradingcardgame.message_server.BLL.game.IGameManager;
@@ -58,10 +60,8 @@ public class Router {
             case GET -> {
                 switch (request.getRequestTarget()) {
                     case "/cards" -> command = new GetCardsCommand(_cardsManager, identity);
-                    case "/stats" -> command = new getStatsCommand(identity, _gameManager);
-                    case "/score" -> {
-                        System.out.println("score");
-                    }
+                    case "/stats" -> command = new GetStatsCommand(identity, _gameManager);
+                    case "/scoreboard" -> command = new GetScoreboardCommand(identity, _gameManager);
                     case "/tradings" -> {
                         System.out.println("gettradings");
                     }
@@ -101,9 +101,7 @@ public class Router {
                         }
                     }
                     case "/transactions/packages" -> command = new BuyPackageCommand(_packageManager, identity);
-                    case "/battles" -> {
-                        System.out.println("battles");
-                    }
+                    case "/battles" -> command = new BattleCommand(identity, _gameManager);
                     case "/tradings" -> {
                         if (isMatchTradingdealId(request.getRequestTarget())) {
                             System.out.println("tradings");

@@ -27,11 +27,13 @@ public class LoginCommand implements IRouteCommand {
         }
 
         HttpResponse response;
-        if (user == null)
+        if (user == null) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_401_UNAUTHORIZED);
+            response.setContent("User not found");
+        }
         else {
             response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
-            response.setContent(user.token);
+            response.setContent("Data successfully retrieved");
         }
 
         return response;

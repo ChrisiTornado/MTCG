@@ -3,6 +3,7 @@ package com.monstertradingcardgame.message_server.DAL;
 import com.monstertradingcardgame.message_server.API.User.UserNotFoundException;
 import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.message_server.Models.User.UserData;
+import com.monstertradingcardgame.message_server.Models.User.UserStats;
 import com.monstertradingcardgame.server_core.httpserver.config.Configuration;
 import com.monstertradingcardgame.server_core.httpserver.config.ConfigurationManager;
 
@@ -17,7 +18,7 @@ public class DatabaseUserDao implements IUserDao {
     private final String getAllUsers = "SELECT * FROM user_account";
 
     private final String getUserData = "SELECT username, bio, image FROM user_account WHERE username=?";
-    // private NpgsqlConnection connection;
+    private final String insertUserIntoStats = "INSERT INTO stats(username, elo, wins, losses) VALUES(?, ?, ?, ?)";
 
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
 
@@ -66,7 +67,7 @@ public class DatabaseUserDao implements IUserDao {
             preparedStatement.setInt(3, user.getCoins());
 
             preparedStatement.executeUpdate();
-            //insertStats(user); // Assuming you have a method to insert stats
+            insertStats(user);
             return true;
 
         } catch (SQLException e) {
@@ -153,5 +154,20 @@ public class DatabaseUserDao implements IUserDao {
             e.printStackTrace();
         }
         return users;
+    }
+
+    public void insertStats(User user) {
+        try (Connection connection = DriverManager.getConnection(conf.getUrl(), conf.getDb_user(), conf.getDb_password());
+             PreparedStatement preparedStatement = connection.prepareStatement(insertUserIntoStats)) {
+
+                preparedStatement.setString(1, user.getCredentials().getUsername());
+                preparedStatement.setInt(2, UserStats.START_ELO);
+                preparedStatement.setInt(3, UserStats.START_WINS);
+                preparedStatement.setInt(4, UserStats.START_LOSES);
+
+                preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

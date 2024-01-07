@@ -26,13 +26,16 @@ public class UpdateUserCommand extends AuthenticatedRouteCommand {
         HttpResponse response;
         if (!identity.token.equals(username + "-mtcgToken")) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            response.setContent("user not found");
             return response;
         }
         try {
             _userManager.updateUser(identity, userData);
             response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
+            response.setContent("Data successfully retrieved");
         } catch (RuntimeException e) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            response.setContent("bad request");
         }
         return response;
     }

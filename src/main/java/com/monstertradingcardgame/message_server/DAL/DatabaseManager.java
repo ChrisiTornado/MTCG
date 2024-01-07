@@ -9,9 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-    Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
 
     public void initializeDatabase() {
+        ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/http.json");
+        Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
         try (Connection conn = DriverManager.getConnection(conf.getUrl(), conf.getDb_user(), conf.getDb_password())) {
             if (conn != null) {
                 System.out.println("Connected to the PostgreSQL server.");
@@ -33,7 +34,7 @@ public class DatabaseManager {
             stmt.executeUpdate("DROP TABLE IF EXISTS card CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS package CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS card_package CASCADE;");
-            // Füge weitere DROP TABLE-Statements für andere Tabellen hinzu, falls erforderlich
+            stmt.executeUpdate("DROP TABLE IF EXISTS stats CASCADE;");
         }
     }
 
@@ -78,7 +79,14 @@ public class DatabaseManager {
                             ")"
             );
 
-            // Füge weitere CREATE TABLE-Statements für andere Tabellen hinzu, falls erforderlich
+            stmt.executeUpdate(
+                    "CREATE TABLE stats (" +
+                            "username VARCHAR(50) UNIQUE NOT NULL," +
+                            "elo INTEGER DEFAULT 0," +
+                            "wins INTEGER DEFAULT 0," +
+                            "losses INTEGER DEFAULT 0" +
+                            ")"
+            );
         }
     }
 }

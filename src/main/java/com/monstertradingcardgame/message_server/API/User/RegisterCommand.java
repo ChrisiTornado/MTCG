@@ -21,8 +21,10 @@ public class RegisterCommand implements IRouteCommand {
         try {
             _userManager.registerUser(_credentials);
             response = new HttpResponse(HttpStatusCode.SUCCESS_201_CREATED);
+            response.setContent("User successfully created");
         } catch (RuntimeException e) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_409_DUPLICATED_USER);
+            response.setContent("User with same username already registered");
         }
         return response;
     }

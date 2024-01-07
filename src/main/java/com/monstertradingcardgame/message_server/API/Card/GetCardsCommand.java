@@ -29,6 +29,10 @@ public class GetCardsCommand extends AuthenticatedRouteCommand {
         HttpResponse response;
         try {
             List<Card> userCards = _cardsManager.getUserCards(identity);
+            if (userCards == null) {
+                response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_403_FORBIDDEN);
+                response.setContent("User not found");
+            }
             response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
             List<Card> cardInfos = userCards.stream()
                     .map(card -> new Card(card.id, card.name, card.damage))

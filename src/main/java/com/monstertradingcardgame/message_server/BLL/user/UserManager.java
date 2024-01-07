@@ -53,8 +53,7 @@ public class UserManager implements IUserManager {
         if (user != null) {
             return user;
         } else {
-            // TODO: exception
-            throw new RuntimeException("User not found");
+            return null;
         }
     }
 }

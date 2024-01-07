@@ -31,7 +31,8 @@ public class BuyPackageCommand extends AuthenticatedRouteCommand {
     public HttpResponse execute() {
         HttpResponse response;
         if (identity.coins < 5) {
-            response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_403_FORBIDDEN);
+            response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_401_UNAUTHORIZED);
+            response.setContent("Not enough money for buying a card package");
             return response;
         }
 
@@ -48,7 +49,8 @@ public class BuyPackageCommand extends AuthenticatedRouteCommand {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (NoPackageAvailableException e) {
-            throw new RuntimeException(e);
+            response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_403_FORBIDDEN);
+            response.setContent("No package available");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

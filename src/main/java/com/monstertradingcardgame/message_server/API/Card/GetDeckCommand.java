@@ -59,6 +59,7 @@ public class GetDeckCommand extends AuthenticatedRouteCommand {
                 }
             } else {
                 response = new HttpResponse(HttpStatusCode.SUCCESS_204_NO_CONTENT);
+                response.setContent("The request was fine, but the user doesn't have any cards");
                 return response;
             }
         } catch (JsonProcessingException | SQLException e) {

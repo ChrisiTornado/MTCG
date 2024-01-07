@@ -13,7 +13,6 @@ import java.io.IOException;
 public class HttpServer {
     private final static Logger LOGGER = LoggerFactory.getLogger(HttpServer.class);
 
-
     public static void main(String[] args) {
         ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/http.json");
         Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();

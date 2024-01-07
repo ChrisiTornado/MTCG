@@ -4,7 +4,9 @@ import com.monstertradingcardgame.message_server.API.IRouteCommand;
 import com.monstertradingcardgame.message_server.API.Router;
 import com.monstertradingcardgame.message_server.BLL.Package.PackageManager;
 import com.monstertradingcardgame.message_server.BLL.cards.CardsManager;
+import com.monstertradingcardgame.message_server.BLL.game.GameManager;
 import com.monstertradingcardgame.message_server.BLL.user.UserManager;
+import com.monstertradingcardgame.message_server.DAL.DataBaseGameDao;
 import com.monstertradingcardgame.message_server.DAL.DatabaseCardDao;
 import com.monstertradingcardgame.message_server.DAL.DatabasePackageDao;
 import com.monstertradingcardgame.message_server.DAL.DatabaseUserDao;
@@ -25,11 +27,14 @@ public class HttpConnectionWorkerThread extends Thread {
     private DatabaseUserDao userDao = new DatabaseUserDao();
     private DatabaseCardDao cardDao = new DatabaseCardDao();
     private DatabasePackageDao packageDao = new DatabasePackageDao();
+    private DataBaseGameDao gameDao = new DataBaseGameDao();
     private UserManager userManager = new UserManager(userDao);
     private CardsManager cardsManager = new CardsManager(cardDao);
     private PackageManager packageManager = new PackageManager(packageDao);
 
-    private Router router = new Router(userManager, cardsManager, packageManager);
+    private GameManager gameManager = new GameManager(gameDao, cardDao);
+
+    private Router router = new Router(userManager, cardsManager, packageManager, gameManager);
 
     public HttpConnectionWorkerThread(Socket socket) {
         this.socket = socket;
@@ -50,7 +55,7 @@ public class HttpConnectionWorkerThread extends Thread {
             HttpResponse response;
 
             if (command != null)
-                response = command.Execute();
+                response = command.execute();
             else
             {
                 response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);

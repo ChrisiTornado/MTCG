@@ -10,5 +10,5 @@ public abstract class AuthenticatedRouteCommand implements IRouteCommand {
         this.identity = identity;
     }
 
-    public abstract HttpResponse Execute();
+    public abstract HttpResponse execute();
 }

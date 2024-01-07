@@ -12,6 +12,7 @@ import com.monstertradingcardgame.server_core.httpserver.util.Json;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.swing.UIManager.put;
 
@@ -26,7 +27,7 @@ public class GetDeckCommand extends AuthenticatedRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         HttpResponse response;
         if (!("json".equals(format) || "plain".equals(format))) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
@@ -35,20 +36,16 @@ public class GetDeckCommand extends AuthenticatedRouteCommand {
 
         List<Card> cards;
         try {
-            cards = _cardsManager.getUserCards(identity);
+            cards = _cardsManager.getUserDeck(identity);
             if (cards.size() > 0) {
                 response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
                 switch (format) {
                     case "json":
-                        JsonNode jsonNode = Json.toJson(cards.stream()
-                                .map(card -> new Object() {{
-                                    put("id", card.id);
-                                    put("name", card.name);
-                                    put("damage", card.damage);
-                                    put("element", card.elementType);
-                                }})
-                                .toArray());
+                        List<Card> cardInfos = cards.stream()
+                                .map(card -> new Card(card.id, card.name, card.damage))
+                                .collect(Collectors.toList());
 
+                        JsonNode jsonNode = Json.toJson(cardInfos);
                         String jsonContent = Json.stringify(jsonNode);
                         response.setContent(jsonContent);
                         return response;
@@ -60,8 +57,11 @@ public class GetDeckCommand extends AuthenticatedRouteCommand {
                         response.setContent(messageBuilder.toString());
                         return response;
                 }
+            } else {
+                response = new HttpResponse(HttpStatusCode.SUCCESS_204_NO_CONTENT);
+                return response;
             }
-        } catch (JsonProcessingException | NoCardsException | SQLException e) {
+        } catch (JsonProcessingException | SQLException e) {
             throw new RuntimeException(e);
         }
         return null;

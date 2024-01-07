@@ -12,6 +12,7 @@ import com.monstertradingcardgame.server_core.httpserver.util.Json;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.swing.UIManager.put;
 
@@ -24,20 +25,16 @@ public class GetCardsCommand extends AuthenticatedRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         HttpResponse response;
         try {
             List<Card> userCards = _cardsManager.getUserCards(identity);
             response = new HttpResponse(HttpStatusCode.SUCCESS_200_OK);
-            JsonNode jsonNode = Json.toJson(userCards.stream()
-                    .map(card -> new Object() {{
-                        put("id", card.id);
-                        put("name", card.name);
-                        put("damage", card.damage);
-                        put("element", card.elementType);
-                    }})
-                    .toArray());
+            List<Card> cardInfos = userCards.stream()
+                    .map(card -> new Card(card.id, card.name, card.damage))
+                    .collect(Collectors.toList());
 
+            JsonNode jsonNode = Json.toJson(cardInfos);
             String jsonContent = Json.stringify(jsonNode);
             response.setContent(jsonContent);
         } catch (JsonProcessingException | NoCardsException | SQLException e) {

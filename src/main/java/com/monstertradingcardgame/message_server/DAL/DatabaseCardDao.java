@@ -9,6 +9,7 @@ import com.monstertradingcardgame.message_server.Models.Card.ElementType;
 import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.server_core.httpserver.config.Configuration;
 import com.monstertradingcardgame.server_core.httpserver.config.ConfigurationManager;
+import org.postgresql.jdbc.PgArray;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class DatabaseCardDao implements ICardDao {
     String getCard = "SELECT * FROM card WHERE card_id = ?";
     String getUserStack = "SELECT stack FROM user_account WHERE username = ?";
     String getUserDeck = "SELECT deck FROM user_account WHERE username = ?";
+
+    String addCard = "INSERT INTO card(card_id, name, element, damage) VALUES(?, ?, ?, ?)";
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
     @Override
     public List<Card> getUserCards(String username) throws NoCardsException, SQLException {
@@ -72,7 +75,7 @@ public class DatabaseCardDao implements ICardDao {
 
                 ElementType element = ElementType.valueOf(resultSet.getString("element"));
 
-                return new Card(name, damage, id);
+                return new Card(id, name, damage);
             }
         }
     }
@@ -87,7 +90,22 @@ public class DatabaseCardDao implements ICardDao {
                 while (resultSet.next()) {
                     Object deckObj = resultSet.getObject("deck");
                     if (deckObj != null) {
-                        deck.addAll(Arrays.asList((UUID[]) deckObj));
+                        if (deckObj instanceof UUID[]) {
+                            UUID[] uuidArray = (UUID[]) deckObj;
+                            deck.addAll(Arrays.asList(uuidArray));
+                        } else if (deckObj instanceof PgArray) {
+                            PgArray pgArray = (PgArray) deckObj;
+                            Object[] pgObjects = (Object[]) pgArray.getArray();
+
+                            for (Object pgObj : pgObjects) {
+                                if (pgObj instanceof UUID) {
+                                    deck.add((UUID) pgObj);
+                                } else if (pgObj instanceof org.postgresql.util.PGobject) {
+                                    org.postgresql.util.PGobject pgUUID = (org.postgresql.util.PGobject) pgObj;
+                                    deck.add(UUID.fromString(pgUUID.getValue()));
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -111,9 +129,12 @@ public class DatabaseCardDao implements ICardDao {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<UUID> stack = new ArrayList<>();
                 if (resultSet.next()) {
-                    Object stackObj = resultSet.getObject("stack");
-                    if (stackObj != null) {
-                        stack.addAll(Arrays.asList((UUID[]) stackObj));
+                    PgArray pgArray = (PgArray) resultSet.getObject("stack");
+                    if (pgArray != null) {
+                        Object[] uuidObjects = (Object[]) pgArray.getArray();
+                        for (Object uuidObj : uuidObjects) {
+                            stack.add(UUID.fromString(uuidObj.toString()));
+                        }
                     }
                 }
                 return stack;
@@ -129,7 +150,7 @@ public class DatabaseCardDao implements ICardDao {
             }
 
             List<Card> userCards = getUserCards(user.getCredentials().getUsername());
-            if (!userCards.containsAll(Arrays.asList(cardIds))) {
+            if (!userCards.stream().map(Card::getId).toList().containsAll(Arrays.asList(cardIds))) {
                 throw new CardNotOwnedOrUnavailableException();
             }
 
@@ -142,6 +163,22 @@ public class DatabaseCardDao implements ICardDao {
             user.deck = Arrays.asList(cardIds);
             return true;
         } catch (NoCardsException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addCard(Card card) {
+        try (Connection connection = DriverManager.getConnection(conf.getUrl(), conf.getDb_user(), conf.getDb_password());
+             PreparedStatement preparedStatement = connection.prepareStatement(addCard)) {
+
+            preparedStatement.setObject(1, card.id);
+            preparedStatement.setString(2, String.valueOf(card.name));
+            preparedStatement.setString(3, String.valueOf(card.elementType));
+            preparedStatement.setInt(4, (int) card.damage);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

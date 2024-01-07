@@ -9,11 +9,9 @@ import java.util.regex.Pattern;
 
 public class FormatParser implements IRouteParser {
     @Override
-    public boolean IsMatch(String resourcePath, String routePattern) {
+    public boolean isMatch(String resourcePath, String routePattern) {
         String pattern = "^" + routePattern.replace("{format}", ".*").replace("/", "\\/") + "(\\?.*)?$";
-        Pattern regexPattern = Pattern.compile(pattern);
-        Matcher matcher = regexPattern.matcher(resourcePath);
-        return matcher.matches();
+        return resourcePath.matches(pattern);
     }
 
     @Override
@@ -30,7 +28,11 @@ public class FormatParser implements IRouteParser {
         return parameters;
     }
 
-    public static String parseFormatParameter(String resourcePath, String routePattern) {
+    private String parseFormatParameter(String resourcePath, String routePattern) {
+        if (!routePattern.contains("{format}")) {
+            return null;
+        }
+
         String pattern = "^" + routePattern.replace("{format}", "(?<format>[^\\?\\/]*)").replace("/", "\\/") + "$";
         Pattern regexPattern = Pattern.compile(pattern);
         Matcher matcher = regexPattern.matcher(resourcePath);
@@ -42,10 +44,10 @@ public class FormatParser implements IRouteParser {
         }
     }
 
-    public static Map<String, String> parseQueryParameters(String route) {
+    private Map<String, String> parseQueryParameters(String route) {
         Map<String, String> parameters = new HashMap<>();
 
-        String[] splitRoute = route.split("\\?", 2);
+        String[] splitRoute = route.split("\\?", -1);
         if (splitRoute.length > 1) {
             String query = splitRoute[1];
             String[] keyValues = query.split("&");

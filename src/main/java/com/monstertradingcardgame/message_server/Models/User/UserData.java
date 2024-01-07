@@ -3,21 +3,21 @@ package com.monstertradingcardgame.message_server.Models.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserData {
-    public String name;
+    public String username;
     public String bio;
     public String image;
-    public UserData(@JsonProperty("Username") String name, @JsonProperty("Bio") String bio, @JsonProperty("Image") String image) {
-        name = this.name;
-        bio = this.bio;
-        image = this.image;
+    public UserData(@JsonProperty("Name") String name, @JsonProperty("Bio") String bio, @JsonProperty("Image") String image) {
+        this.username = name;
+        this.bio = bio;
+        this.image = image;
     }
 
     public boolean isEmpty() {
-        return name.isEmpty() || bio.isEmpty() || image.isEmpty();
+        return username.isEmpty() || bio.isEmpty() || image.isEmpty();
     }
 
     @Override
     public String toString() {
-        return String.format("Name: %s Bio: %s Image: %s", name, bio, image);
+        return String.format("Name: %s Bio: %s Image: %s", username, bio, image);
     }
 }

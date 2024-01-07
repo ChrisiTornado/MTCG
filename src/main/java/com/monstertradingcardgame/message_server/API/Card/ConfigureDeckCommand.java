@@ -20,7 +20,7 @@ public class ConfigureDeckCommand extends AuthenticatedRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         HttpResponse response;
         try {
             _cardsManager.configureNewDeck(identity, cardIds);

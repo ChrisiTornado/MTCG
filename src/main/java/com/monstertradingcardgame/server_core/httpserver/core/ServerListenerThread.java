@@ -16,6 +16,7 @@ public class ServerListenerThread extends Thread {
     private ServerSocket serverSocket;
     private boolean isServerSocketRunning;
 
+
     public ServerListenerThread(int port, String webroot) throws IOException {
         this.port = port;
         this.webroot = webroot;

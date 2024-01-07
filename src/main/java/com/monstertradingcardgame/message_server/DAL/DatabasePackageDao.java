@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class DatabasePackageDao implements IPackageDao {
-    private final String createNewCardPackage = "INSERT INTO card_package (package_id, card_id) VALUES (?, ?, ?, ?, ?)";
-    private final String createNewPackage = "INSERT INTO package DEFAULT VALUES RETURNING id";
+    private DatabaseCardDao _cardDao = new DatabaseCardDao();
+    private final String createNewCardPackage = "INSERT INTO card_package (package_id, card_id) VALUES (?, ?)";
+    private final String createNewPackage = "INSERT INTO package DEFAULT VALUES RETURNING package_id";
     private final String queryGetDistinctPackageIds = "SELECT DISTINCT package_id FROM card_package ORDER BY package_id ASC;";
     private final String queryGetCardIds = "SELECT card_id FROM card_package WHERE package_id = ?;";
     private final String queryDeletePackageId = "DELETE FROM card_package WHERE package_id = ?";
@@ -29,38 +30,30 @@ public class DatabasePackageDao implements IPackageDao {
              PreparedStatement preparedStatement = connection.prepareStatement(createNewPackage)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    packageId = resultSet.getInt("id");
+                    packageId = resultSet.getInt("package_id");
                 } else {
                     throw new SQLException("Failed to create a new package");
                 }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-
-        try (Connection connection = DriverManager.getConnection(conf.getUrl(), conf.getDb_user(), conf.getDb_password());
-             PreparedStatement preparedStatement = connection.prepareStatement(createNewCardPackage)) {
-            connection.setAutoCommit(false); // Starte eine Transaktion
-            preparedStatement.setInt(1, packageId);
-            for (int i = 0; i < cards.length; i++) {
-                preparedStatement.setObject(i + 2, cards[i].id);
-            }
-
-            try {
-                for (Card card : cards) {
-                    insertIntoTableCard(card);
-                }
-                preparedStatement.executeUpdate();
-                connection.commit();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+
+        try (Connection connection = DriverManager.getConnection(conf.getUrl(), conf.getDb_user(), conf.getDb_password());
+             PreparedStatement preparedStatement = connection.prepareStatement(createNewCardPackage)) {
+            for (int i = 0; i < cards.length; i++) {
+                _cardDao.addCard(cards[i]);
+                preparedStatement.setInt(1, packageId);
+                preparedStatement.setObject(2, cards[i].id);
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         @Override
     public List<Card> addPackageToPlayer(User user) throws SQLException, NoPackageAvailableException {

@@ -18,7 +18,7 @@ public class LoginCommand implements IRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         User user;
         try {
             user = _userManager.loginUser(_credentials);

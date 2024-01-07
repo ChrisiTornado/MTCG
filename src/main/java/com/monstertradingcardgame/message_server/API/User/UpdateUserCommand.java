@@ -22,9 +22,9 @@ public class UpdateUserCommand extends AuthenticatedRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         HttpResponse response;
-        if (identity.token != username + "-mtcgToken" && username != "admin") {
+        if (!identity.token.equals(username + "-mtcgToken")) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
             return response;
         }

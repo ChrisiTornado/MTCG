@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class TradingDealParser implements IRouteParser {
     @Override
-    public boolean IsMatch(String resourcePath, String routePattern) {
+    public boolean isMatch(String resourcePath, String routePattern) {
         return false;
     }
 

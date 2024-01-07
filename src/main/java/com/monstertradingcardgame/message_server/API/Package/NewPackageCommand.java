@@ -21,9 +21,9 @@ public class NewPackageCommand extends AuthenticatedRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         HttpResponse response;
-        if (identity.credentials.username != "admin") {
+        if (!identity.credentials.username.equals("admin")) {
             response = new HttpResponse(HttpStatusCode.CLIENT_ERROR_403_FORBIDDEN);
             return response;
         }

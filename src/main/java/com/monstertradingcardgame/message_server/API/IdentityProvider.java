@@ -1,5 +1,6 @@
 package com.monstertradingcardgame.message_server.API;
 
+import com.monstertradingcardgame.message_server.API.User.NoPermissionException;
 import com.monstertradingcardgame.message_server.BLL.user.IUserManager;
 import com.monstertradingcardgame.message_server.Models.User.User;
 import com.monstertradingcardgame.server_core.http.HttpHeader;
@@ -21,6 +22,8 @@ public class IdentityProvider {
             String token = authToken.substring("Bearer ".length());
             try {
                 currentUser = _userManager.getUserByAuthToken(token);
+                if (currentUser == null)
+                    throw new NoPermissionException();
             } catch (Exception ignored) {
                 // TODO: implement exception
             }

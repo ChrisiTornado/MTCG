@@ -16,7 +16,7 @@ public class RegisterCommand implements IRouteCommand {
     }
 
     @Override
-    public HttpResponse Execute() {
+    public HttpResponse execute() {
         HttpResponse response;
         try {
             _userManager.registerUser(_credentials);
